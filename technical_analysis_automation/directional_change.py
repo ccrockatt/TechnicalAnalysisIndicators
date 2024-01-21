@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 
+
 def directional_change(close: np.array, high: np.array, low: np.array, sigma: float):
-    
-    up_zig = True # Last extreme is a bottom. Next is a top. 
+    up_zig = True  # Last extreme is a bottom. Next is a top.
     tmp_max = high[0]
     tmp_min = low[0]
     tmp_max_i = 0
@@ -15,12 +15,12 @@ def directional_change(close: np.array, high: np.array, low: np.array, sigma: fl
     bottoms = []
 
     for i in range(len(close)):
-        if up_zig: # Last extreme is a bottom
+        if up_zig:  # Last extreme is a bottom
             if high[i] > tmp_max:
                 # New high, update 
                 tmp_max = high[i]
                 tmp_max_i = i
-            elif close[i] < tmp_max - tmp_max * sigma: 
+            elif close[i] < tmp_max - tmp_max * sigma:
                 # Price retraced by sigma %. Top confirmed, record it
                 # top[0] = confirmation index
                 # top[1] = index of top
@@ -32,12 +32,12 @@ def directional_change(close: np.array, high: np.array, low: np.array, sigma: fl
                 up_zig = False
                 tmp_min = low[i]
                 tmp_min_i = i
-        else: # Last extreme is a top
+        else:  # Last extreme is a top
             if low[i] < tmp_min:
                 # New low, update 
                 tmp_min = low[i]
                 tmp_min_i = i
-            elif close[i] > tmp_min + tmp_min * sigma: 
+            elif close[i] > tmp_min + tmp_min * sigma:
                 # Price retraced by sigma %. Bottom confirmed, record it
                 # bottom[0] = confirmation index
                 # bottom[1] = index of bottom
@@ -52,6 +52,7 @@ def directional_change(close: np.array, high: np.array, low: np.array, sigma: fl
 
     return tops, bottoms
 
+
 def get_extremes(ohlc: pd.DataFrame, sigma: float):
     tops, bottoms = directional_change(ohlc['close'], ohlc['high'], ohlc['low'], sigma)
     tops = pd.DataFrame(tops, columns=['conf_i', 'ext_i', 'ext_p'])
@@ -62,26 +63,6 @@ def get_extremes(ohlc: pd.DataFrame, sigma: float):
     extremes = extremes.set_index('conf_i')
     extremes = extremes.sort_index()
     return extremes
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -96,17 +77,3 @@ if __name__ == '__main__':
         plt.plot(top[1], top[2], marker='o', color='green', markersize=4)
 
     plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
