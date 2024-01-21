@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # Checks if there is a local top detected at curr index
 def rw_top(data: np.array, curr_index: int, order: int) -> bool:
     if curr_index < order * 2 + 1:
@@ -14,8 +15,9 @@ def rw_top(data: np.array, curr_index: int, order: int) -> bool:
         if data[k + i] > v or data[k - i] > v:
             top = False
             break
-    
+
     return top
+
 
 # Checks if there is a local top detected at curr index
 def rw_bottom(data: np.array, curr_index: int, order: int) -> bool:
@@ -29,10 +31,11 @@ def rw_bottom(data: np.array, curr_index: int, order: int) -> bool:
         if data[k + i] < v or data[k - i] < v:
             bottom = False
             break
-    
+
     return bottom
 
-def rw_extremes(data: np.array, order:int):
+
+def rw_extremes(data: np.array, order: int):
     # Rolling window local tops and bottoms
     tops = []
     bottoms = []
@@ -43,16 +46,15 @@ def rw_extremes(data: np.array, order:int):
             # top[2] = price of top
             top = [i, i - order, data[i - order]]
             tops.append(top)
-        
+
         if rw_bottom(data, i, order):
             # bottom[0] = confirmation index
             # bottom[1] = index of bottom
             # bottom[2] = price of bottom
             bottom = [i, i - order, data[i - order]]
             bottoms.append(bottom)
-    
-    return tops, bottoms
 
+    return tops, bottoms
 
 
 if __name__ == "__main__":
@@ -69,27 +71,10 @@ if __name__ == "__main__":
     for bottom in bottoms:
         plt.plot(idx[bottom[1]], bottom[2], marker='o', color='red')
 
-
     plt.show()
 
-
 # Scipy implementation (faster but use with care to not cheat with future data)
-#import scipy
-#arr = data['close'].to_numpy()
-#bottoms = scipy.signal.argrelextrema(arr, np.less, order=3)
-#tops = scipy.signal.argrelextrema(arr, np.greater, order=3)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# import scipy
+# arr = data['close'].to_numpy()
+# bottoms = scipy.signal.argrelextrema(arr, np.less, order=3)
+# tops = scipy.signal.argrelextrema(arr, np.greater, order=3)
