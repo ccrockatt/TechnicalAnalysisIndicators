@@ -1,6 +1,6 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 
 def is_local_swing_extreme(data_set: np.array, current_index: int, time_radius: int, is_top: bool) -> bool:
@@ -39,7 +39,7 @@ def detect_swing_extremes(data_set: np.array, time_radius: int):
                          ))
 
 
-if __name__ == "__main__":
+def main():
     data = pd.read_csv('.././data/BTCUSDT86400.csv')
     data['date'] = data['date'].astype('datetime64[s]')
     data = data.set_index('date')
@@ -54,13 +54,19 @@ if __name__ == "__main__":
 
     # Plotting swing tops and bottoms as lines overlayed onto the bars
     for swing in swing_tops.itertuples():
-        ax.plot([swing.index_of_swing, swing.index_of_swing], [swing.price_of_swing, data.loc[swing.index_of_swing, 'high']], color='green', marker='o', markersize=8)
+        ax.plot([swing.index_of_swing, swing.index_of_swing],
+                [swing.price_of_swing, data.loc[swing.index_of_swing, 'high']], color='green', marker='o', markersize=8)
 
     for swing in swing_bottoms.itertuples():
-        ax.plot([swing.index_of_swing, swing.index_of_swing], [swing.price_of_swing, data.loc[swing.index_of_swing, 'low']], color='red', marker='o', markersize=8)
+        ax.plot([swing.index_of_swing, swing.index_of_swing],
+                [swing.price_of_swing, data.loc[swing.index_of_swing, 'low']], color='red', marker='o', markersize=8)
 
     # Display legend
     ax.legend()
 
     # Show the plot
     plt.show()
+
+
+if __name__ == '__main__':
+    main()
