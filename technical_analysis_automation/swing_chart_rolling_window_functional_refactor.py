@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import mplfinance as mpf
+from matplotlib import pyplot as plt
 
 
 def is_local_swing_extreme(data_set: np.array, current_index: int, time_radius: int, is_top: bool) -> bool:
@@ -34,9 +35,10 @@ def detect_swing_extremes(data_set: np.array, time_radius: int):
         if is_local_swing_extreme(data_set, loop_index, time_radius, False)
     ]
 
-    return (pd.DataFrame(local_tops, columns=["confirmation_index", "index_of_swing", "price_of_swing"]),
-            pd.DataFrame(local_bottoms, columns=["confirmation_index", "index_of_swing", "price_of_swing"]
-                         ))
+    return (
+        pd.DataFrame(local_tops, columns=["confirmation_index", "index_of_swing", "price_of_swing"]),
+        pd.DataFrame(local_bottoms, columns=["confirmation_index", "index_of_swing", "price_of_swing"])
+    )
 
 
 def main():
@@ -46,23 +48,23 @@ def main():
 
     swing_tops, swing_bottoms = detect_swing_extremes(data['close'].to_numpy(), 10)
 
-    # Plotting as a bar chart
-    fig, ax = plt.subplots()
-
-    # Plotting bars
-    ax.bar(data.index, data['close'], width=0.8, align='center', label='Close Price', alpha=0.7)
-
-    # Plotting swing tops and bottoms as lines overlayed onto the bars
-    for swing in swing_tops.itertuples():
-        ax.plot([swing.index_of_swing, swing.index_of_swing],
-                [swing.price_of_swing, data.loc[swing.index_of_swing, 'high']], color='green', marker='o', markersize=8)
-
-    for swing in swing_bottoms.itertuples():
-        ax.plot([swing.index_of_swing, swing.index_of_swing],
-                [swing.price_of_swing, data.loc[swing.index_of_swing, 'low']], color='red', marker='o', markersize=8)
+    # Plotting as a trading bar chart
+    fig, axlist = mpf.plot(data,
+                           type='candle',  # candlestick chart
+                           style='yahoo',  # chart style
+                           addplot=[
+                               mpf.make_addplot(swing_tops['price_of_swing'], color='green', marker='^', markersize=8),
+                               mpf.make_addplot(swing_bottoms['price_of_swing'], color='red', marker='v', markersize=8)
+                           ],
+                           volume=False,
+                           figratio=(10, 6),  # figure size
+                           title='BTCUSDT Trading Chart',
+                           ylabel='Price',
+                           ylabel_lower='Volume'
+                           )
 
     # Display legend
-    ax.legend()
+    axlist[0].legend()
 
     # Show the plot
     plt.show()
