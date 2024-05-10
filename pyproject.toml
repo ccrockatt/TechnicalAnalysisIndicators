@@ -1,19 +1,56 @@
-[tool.poetry]
-name = "technical-analysis-automation"
-version = "0.1.0"
-description = ""
-authors = ["Luke Taranto <luke.taranto@gmail.com>"]
+[project]
+name = "techincal_analysis_indicator_suite"
+dynamic = ["version"]
+description = "A suite of technical analysis indicators for use in trading strategies"
+authors = [
+    { name = "Luke Taranto", email = "thewalletinspector@gmail.com" },
+]
+
 readme = "README.md"
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-matplotlib = "^3.8.2"
-pandas = "^2.2.0"
-mpld3 = "^0.5.10"
-mplfinance = "^0.12.10b0"
-pyarrow = "^15.0.0"
+requires-python = ">3.11"
 
+dependencies = [
+    "gitpython>=3.1.42",
+    "pyyaml>=6.0.1",
+    "chispa>=0.10.0",
+    "pdm-pep517>=1.1.4",
+    "matplotlib >=3.8.4",
+    "pandas >=2.2.2",
+    "mpld3 >=0.5.10",
+    "mplfinance >=0.12.10b0",
+    "pyarrow >=16.0.0"
+]
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=8.1.1",
+    "chispa>=0.10.0",
+    "hypothesis",
+    "ruff>=0.3.7",
+    "coverage>=7.4.3",
+]
+
+
+[tool.pdm.version]
+source = "scm"
+
+[tool.pdm.build]
+includes = ["src/python/"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F"]
+extend-select = ["D100", "E501", "ANN201", "DTZ005", "D103", "I", "E", "F", "ARG", "UP", "B", "SIM", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
