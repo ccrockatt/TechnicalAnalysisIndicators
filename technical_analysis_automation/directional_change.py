@@ -53,8 +53,8 @@ def directional_change(close: np.array, high: np.array, low: np.array, sigma: fl
     return tops, bottoms
 
 
-def get_extremes(ohlc: pd.DataFrame, sigma: float):
-    tops, bottoms = directional_change(ohlc['close'], ohlc['high'], ohlc['low'], sigma)
+def get_extremes(ohlc: pd.DataFrame, sigma: float, close_key='close', high_key='high', low_key='low') -> pd.DataFrame:
+    tops, bottoms = directional_change(ohlc[close_key].to_numpy(), ohlc[high_key].to_numpy(), ohlc[low_key].to_numpy(), sigma)
     tops = pd.DataFrame(tops, columns=['conf_i', 'ext_i', 'ext_p'])
     bottoms = pd.DataFrame(bottoms, columns=['conf_i', 'ext_i', 'ext_p'])
     tops['type'] = 1
