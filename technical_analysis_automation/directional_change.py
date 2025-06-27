@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from numba import jit
 
-
+@jit
 def directional_change(close: np.array, high: np.array, low: np.array, sigma: float):
     up_zig = True  # Last extreme is a bottom. Next is a top.
     tmp_max = high[0]
@@ -63,17 +64,36 @@ def get_extremes(ohlc: pd.DataFrame, sigma: float):
     extremes = extremes.sort_index()
     return extremes
 
-
 def main():
-    data = pd.read_csv('.././data/BTCUSDT3600.csv')
-    data['date'] = data['date'].astype('datetime64[s]')
-    data = data.set_index('date')
-    tops, bottoms = directional_change(data['close'].to_numpy(), data['high'].to_numpy(), data['low'].to_numpy(), 0.02)
+    # data = pd.read_csv('.././data/BTCUSDT3600.csv')
+    data = pd.read_csv('C:/Users/ccroc/Dev/NextGen-Traders/GoldenPocketScanner/output/data_cache/cached_price_data_MLM_daily_adjusted.csv.zip', index_col=0, parse_dates=True)
+    if 'close' not in data.columns:
+        # Handle different OHLC column naming conventions
+        if '4. close' in data.columns:
+            data = data.rename(columns={
+                '1. open': 'open',
+                '2. high': 'high',
+                '3. low': 'low',
+                '4. close': 'close'
+            })
+        elif 'Close' in data.columns:
+            data = data.rename(columns={
+                'Open': 'open',
+                'High': 'high',
+                'Low': 'low',
+                'Close': 'close'
+            })
+    # data['date'] = data['date'].astype('datetime64[s]')
+    # data = data.set_index('date')
 
-    pd.Series(data['close'].to_numpy()).plot()
+    close_numpy = data['close'].to_numpy()
+    tops, bottoms = directional_change(close_numpy, data['high'].to_numpy(), data['low'].to_numpy(), 0.0516)
+    pd.Series(close_numpy).plot()
     idx = data.index
     for top in tops:
-        plt.plot(top[1], top[2], marker='o', color='green', markersize=4)
+        plt.plot(top[1], top[2], marker='v', color='red', markersize=4)
+    for bottom in bottoms:
+        plt.plot(bottom[1], bottom[2], marker='^', color='green', markersize=4)
 
     plt.show()
 
