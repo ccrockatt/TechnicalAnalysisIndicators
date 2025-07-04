@@ -64,9 +64,9 @@ def get_extremes(ohlc: pd.DataFrame, sigma: float, close_key='close', high_key='
     extremes = extremes.sort_index()
     return extremes
 
-def main():
+def main(symbol: str='SPY', change_decimal: float=0.05):
     # data = pd.read_csv('.././data/BTCUSDT3600.csv')
-    data = pd.read_csv('C:/Users/ccroc/Dev/NextGen-Traders/GoldenPocketScanner/output/data_cache/cached_price_data_MLM_daily_adjusted.csv.zip', index_col=0, parse_dates=True)
+    data = pd.read_csv(f'C:/Users/ccroc/Dev/NextGen-Traders/GoldenPocketScanner/output/data_cache/cached_price_data_{symbol}_daily_adjusted.csv.zip', index_col=0, parse_dates=True)
     if 'close' not in data.columns:
         # Handle different OHLC column naming conventions
         if '4. close' in data.columns:
@@ -87,16 +87,18 @@ def main():
     # data = data.set_index('date')
 
     close_numpy = data['close'].to_numpy()
-    tops, bottoms = directional_change(close_numpy, data['high'].to_numpy(), data['low'].to_numpy(), 0.0516)
+    tops, bottoms = directional_change(close_numpy, data['high'].to_numpy(), data['low'].to_numpy(), change_decimal)
+    plot_highs_and_lows(close_numpy, tops, bottoms)
+
+
+def plot_highs_and_lows(close_numpy, tops, bottoms):
     pd.Series(close_numpy).plot()
-    idx = data.index
     for top in tops:
         plt.plot(top[1], top[2], marker='v', color='red', markersize=4)
     for bottom in bottoms:
         plt.plot(bottom[1], bottom[2], marker='^', color='green', markersize=4)
-
     plt.show()
 
 
 if __name__ == '__main__':
-    main()
+    main(symbol='ERD.TRT', change_decimal=0.1856)
